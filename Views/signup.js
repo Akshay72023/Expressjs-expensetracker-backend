@@ -14,12 +14,12 @@ signupButton.addEventListener('click', async function(event) {
     try {
         const response = await axios.post('http://localhost:3000/user/signup', user);
         if (response.status === 201) {
-            alert('Signup successful');
+            alert(response.data.message);
             window.location.href = './login.html';
         }
     } catch (error) {
-        if (error.response.status === 409 && error.response.data.err === 'User already exists') {
-            alert('User already exists');
+        if (error.response.status === 400 && error.response.data.err === 'User already exists') {
+            alert(error.response.data.err);
         } else {
             console.error(error);
             document.body.innerHTML += `<div >Error: ${error.message} <div>`;

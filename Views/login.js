@@ -9,20 +9,20 @@ loginBtn.addEventListener('click',
             email,
             password
         }
-
-        const response= await axios.post('http://localhost:3000/user/login',obj)
-        .then(response=>{
+        try{
+            const response= await axios.post('http://localhost:3000/user/login',obj)
                 if(response.status === 201){
-                    alert('Login successful');
+                    alert(response.data.message);
                 }
-        })
-        .catch(err=>{
-            if(err.response.status=== 404){
-                alert("User does'nt exists please sinup")
+        }
+        catch(error){
+            if(error.response.status=== 404){
+                alert(error.response.data.err);
             }
-            else if(err.response.status===401){
-                alert("Password Incorrect")
+            else if(error.response.status===401){
+                alert(error.response.data.err);
             }
-            console.log(err);
-        })
-    });
+            console.log(error);
+    };
+
+});
