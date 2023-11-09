@@ -11,7 +11,9 @@ loginBtn.addEventListener('click',
         }
         try{
             const response= await axios.post('http://localhost:3000/user/login',obj)
+            console.log(response);
                 if(response.status === 201){
+                    localStorage.setItem('token', response.data.token);
                     alert(response.data.message);
                     window.location.href = './expense.html';
                 }

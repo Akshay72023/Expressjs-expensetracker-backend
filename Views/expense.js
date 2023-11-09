@@ -12,8 +12,9 @@ myForm.addEventListener('submit', onSubmit);
             description,
             category
         }
+        const token= localStorage.getItem('token');
         try{
-            const response= await axios.post('http://localhost:3000/expense/addexpense',obj)
+            const response= await axios.post('http://localhost:3000/expense/addexpense',obj,{headers:{'Authorization':token}});
             showUserDetails(response.data.newUserExpense);
             } 
         catch (err) {
@@ -24,8 +25,10 @@ myForm.addEventListener('submit', onSubmit);
 
         
     window.addEventListener('DOMContentLoaded' ,async ()=>{  
+        const token= localStorage.getItem('token');
+        console.log(token);
         try {
-            const response= await axios.get('http://localhost:3000/expense/getallexpense');
+            const response= await axios.get('http://localhost:3000/expense/getallexpense', {headers:{'Authorization':token}});
             // console.log(response);
             for (var i = 0; i < response.data.allExpense.length; i++) {
                 showUserDetails(response.data.allExpense[i]);
@@ -46,8 +49,9 @@ myForm.addEventListener('submit', onSubmit);
 
 
         async function deleteExpense(id){
+            const token= localStorage.getItem('token');
             try{
-                const response= await axios.delete(`http://localhost:3000/expense/deleteexpense/${id}`);
+                const response= await axios.delete(`http://localhost:3000/expense/deleteexpense/${id}`,{headers:{'Authorization':token}});
                 removeUserFromScreen(id);
             }
             catch(err){
