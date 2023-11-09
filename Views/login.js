@@ -13,6 +13,7 @@ loginBtn.addEventListener('click',
             const response= await axios.post('http://localhost:3000/user/login',obj)
                 if(response.status === 201){
                     alert(response.data.message);
+                    window.location.href = './expense.html';
                 }
         }
         catch(error){
