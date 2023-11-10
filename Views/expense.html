@@ -10,16 +10,16 @@
             background-color: #f4f4f4;
         }
 
-        .container {
+        /* .container {
             background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            
             width: 400px;
             height: 400px;
             margin-top: 25px;
-        }
+        }  */
 
         form-label {
             font-weight: bold;
@@ -29,7 +29,7 @@
         }
 
         .form-control {
-            width: 100%;
+            width: 70%;
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -38,7 +38,7 @@
         }
 
         .btn-primary {
-            width: 100%;
+            width: 25%;
             padding: 10px;
             font-size: 18px;
             background-color: #4caf50;
@@ -87,6 +87,8 @@
                 <button class="btn btn-primary" id="addexpense">Add Expense</button>
             </div>
         </form>
+            <button class="btn btn-primary" id="rzp-button1">Buy Premium</button>
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <ul class="items"></ul>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
