@@ -24,8 +24,8 @@ exports.postSignup = async (req, res, next) => {
     }
 };
 
-function generateAccessToken(id,username){
-    return jwt.sign({userId :id , username:username},'secretekey');
+function generateAccessToken(id,username,isPremiumUser){
+    return jwt.sign({userId :id , username:username,isPremiumUser},'secretekey');
 }
 
 exports.postLogin = async (req, res, next) => {
@@ -40,7 +40,7 @@ exports.postLogin = async (req, res, next) => {
                 throw err;
             }
             if (result) {
-                return res.status(201).json({success:true,message: 'Login successful' ,token: generateAccessToken(existingUser.id,existingUser.username)});
+                return res.status(201).json({success:true,message: 'Login successful' ,token: generateAccessToken(existingUser.id,existingUser.username,existingUser.isPremiumUser)});
             } else {
                 return res.status(401).json({success:false, err: "Incorrect password" });
             }

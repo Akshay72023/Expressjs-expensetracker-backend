@@ -1,5 +1,7 @@
 const Razorpay = require('razorpay');
 const Order = require('../models/order');
+const userController= require('./user');
+const jwt=require('jsonwebtoken');
 
 const purchasepremium=async(req,res,next)=>{
     try{
@@ -25,10 +27,13 @@ const purchasepremium=async(req,res,next)=>{
     }
 };
 
-
+function generateAccessToken(id,username,isPremiumUser){
+    return jwt.sign({userId :id , username:username,isPremiumUser},'secretekey');
+}
 
 const updatetransactionstatus = async (req, res) => {
     try {
+        const userId= req.user.id;
         const { payment_id, order_id } = req.body;
         const order = await Order.findOne({ where: { orderId: order_id } });
         console.log(payment_id);
@@ -37,7 +42,7 @@ const updatetransactionstatus = async (req, res) => {
 
             Promise.all([promise1, promise2])
                 .then(() => {
-                    return res.status(202).json({ success: true, message: 'Transaction Successful' });
+                    return res.status(202).json({ success: true, message: 'Transaction Successful',token:generateAccessToken(userId,undefined ,true)});
                 })
                 .catch((error) => {
                     console.error(error);

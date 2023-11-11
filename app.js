@@ -9,6 +9,7 @@ dotenv.config();
 const signupRoutes = require('./routes/user');
 const expenseRoutes= require('./routes/expense');
 const purchaseRoutes= require('./routes/purchase');
+const premiumRoutes= require('./routes/premiumfeature');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(cors());
 app.use('/user', signupRoutes);
 app.use('/expense',expenseRoutes);
 app.use('/purchase',purchaseRoutes);
+app.use('/premium',premiumRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
