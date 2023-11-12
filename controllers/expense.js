@@ -1,4 +1,6 @@
+const { NUMBER } = require('sequelize');
 const Expense= require('../models/expense');
+const User= require('../models/user');
 //const sequelize= require('sequelize');
 
 exports.postExpense= async(req,res,next)=>{
@@ -7,6 +9,12 @@ exports.postExpense= async(req,res,next)=>{
         const description=req.body.description
         const category=req.body.category
         const data = await  req.user.createExpense({ amount: amount, description:description, category:category});
+        const totalExpenses= Number(req.user.totalExpense)+ Number(amount);
+      User.update(
+        { totalExpense: totalExpenses},
+        { where: { id: req.user.id } }
+        );
+
         //Expense.create({ amount: amount, description:description, category:category,userId:req.user.id });
         res.status(201).json({ newUserExpense: data });
       } catch (err) {
