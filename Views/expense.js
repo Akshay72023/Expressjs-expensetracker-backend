@@ -86,6 +86,7 @@ myForm.addEventListener('submit', onSubmit);
             const token= localStorage.getItem('token');
             try{
                 const response= await axios.delete(`http://localhost:3000/expense/deleteexpense/${id}`,{headers:{'Authorization':token}});
+                //console.log(response);
                 removeUserFromScreen(id);
             }
             catch(err){
