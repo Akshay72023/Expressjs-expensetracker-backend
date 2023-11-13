@@ -10,12 +10,14 @@ const signupRoutes = require('./routes/user');
 const expenseRoutes= require('./routes/expense');
 const purchaseRoutes= require('./routes/purchase');
 const premiumRoutes= require('./routes/premiumfeature');
+const passwordRoutes=require('./routes/forgotpassword');
 
 const app = express();
 
 const User= require('./models/user');
 const Expense= require('./models/expense');
 const Order= require('./models/order');
+const Forgotpassword=require('./models/forgotpassword');
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -24,12 +26,14 @@ app.use('/user', signupRoutes);
 app.use('/expense',expenseRoutes);
 app.use('/purchase',purchaseRoutes);
 app.use('/premium',premiumRoutes);
+app.use('/password',passwordRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
-
 User.hasMany(Order);
 Order.belongsTo(User);
+User.hasMany(Forgotpassword)
+Forgotpassword.belongsTo(User)
 
 sequelize
     .sync()
