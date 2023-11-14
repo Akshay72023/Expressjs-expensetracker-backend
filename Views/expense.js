@@ -45,7 +45,7 @@ myForm.addEventListener('submit', onSubmit);
             const ispremiumuser=decodeToken.isPremiumUser
             if(ispremiumuser){
                 showPremiumUser();
-                showLeaderboard();
+                showNewFeatures();
             }
             } 
             catch (err) {
@@ -104,7 +104,7 @@ myForm.addEventListener('submit', onSubmit);
 
 
         document.getElementById('rzp-button1').onclick = async function (e) {
-            const token = localStorage.getItem('token');
+            
             console.log(token);
             const response = await axios.post('http://localhost:3000/purchase/premiummembership', {}, { headers: { 'Authorization': token } });
             console.log(response);
@@ -127,11 +127,10 @@ myForm.addEventListener('submit', onSubmit);
                         premiumMessageWrapper.style.padding = '10px'; 
                         premiumMessageWrapper.style.borderRadius = '5px';
                         premiumMessageWrapper.style.width= '65%';
-                        const premiumMessage = document.createElement('span');
-                        premiumMessage.textContent = 'You are a premium user';
-                        premiumMessageWrapper.appendChild(premiumMessage);
+                        premiumMessageWrapper.textContent = 'You are a premium user';
                         localStorage.setItem('token', result.data.token);
-                        showLeaderboard();
+                        showNewFeatures()
+                            
                 }
             };
         
@@ -147,24 +146,33 @@ myForm.addEventListener('submit', onSubmit);
             })
         };
         
-async function showLeaderboard(){
-    const premiumMessageWrapper = document.getElementById('Premium user message');
-    const divElement = document.createElement('div');
-    premiumMessageWrapper.appendChild(divElement);
-    const inputElement = document.createElement("input")
-    inputElement.type = "button"
-    inputElement.value = 'Show Leaderboard'
-    inputElement.className='btn btn-primary'
-    inputElement.onclick = async() => {
-            const token = localStorage.getItem('token')
-            const userLeaderBoardArray = await axios.get('http://localhost:3000/premium/showleaderboard', { headers: {"Authorization" : token} })
+async function showNewFeatures(){
+    const premium = document.getElementById('premium');
+    const inputElement = '<button class="btn btn-primary"  onclick=showPremiumFeatures()>Show Leaderboard</button><br>';
+    const downloadElement='<button class="btn btn-primary" onclick=download()>Download File</button>'
+    premium.innerHTML+= inputElement;
+    premium.innerHTML+=downloadElement;
+      
+}
 
-            var leaderboardElem = document.getElementById('leaderboard')
-            leaderboardElem.innerHTML += '<h1> Leader Board </<h1>'
-            userLeaderBoardArray.data.forEach((userDetails) => {
-                leaderboardElem.innerHTML += `<li>Name - ${userDetails.username} , Totalexpense - ${userDetails.totalExpense || 0} </li>`
-            })
-        }
 
-        document.getElementById("Premium user message").appendChild(inputElement);
+async function showPremiumFeatures(){
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`http://localhost:3000/premium/showleaderboard`, { headers: {"Authorization" : token}});
+    console.log(response);
+    document.getElementById('leaderboard').innerHTML="";
+    document.getElementById('leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
+  
+    for(var i=0;i<response.data.length;i++){
+        console.log(response.data[i].username,response.data[i].totalExpense);
+        showLeaderBoard(response.data[i].username,response.data[i].totalExpense);
+    }
+  }
+
+
+  
+function showLeaderBoard(username,totalExpense){
+    const parentNode=document.getElementById('leaderboard');
+    const children=`<li id="${username}"> Name : ${username} , Totoalexpense : ${totalExpense} </li>`;
+    parentNode.innerHTML=parentNode.innerHTML+children;
 }
