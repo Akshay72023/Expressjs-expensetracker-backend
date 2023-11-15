@@ -98,8 +98,24 @@
                 <div id="premium" class="button-container"></div>
                 
             </div>
+            <br>
             <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <div id="downloadmessage"></div>
+        <h3>Expenses display</h3>
+        <div class="items-controller">
+            <h5>Show 
+          <select id = "Item_Per_Page">
+            <option value="2">02</option>
+            <option value="4">04</option>
+            <option value="5">05</option>
+            <option value="8">08</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="0">50</option>
+          </select>
+          Per Page</h5>
+          </div>
         <h2>Expenses</h2>
         <ul class="items"></ul>
         <div id="pagination-container"  style="display: flex; justify-content: center; align-items: center;"></div>

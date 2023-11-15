@@ -32,8 +32,11 @@ exports.postExpense= async(req,res,next)=>{
  };
 
  exports.getExpense= async(req,res,next)=>{
-  const ITEMS_PER_PAGE = 3;
+  //const ITEMS_PER_PAGE = 2;
     try{
+        const x = +(req.query.itemPerPage || 1);
+      //console.log(typeof(x));
+        ITEMS_PER_PAGE = x  ;
         const page = req.query.page || 1;
         let totalItems ;
         Expense.count({ where: {userId: req.user.id}})

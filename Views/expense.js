@@ -4,6 +4,18 @@ const token= localStorage.getItem('token');
 const pagination= document.getElementById('pagination-container');
 const parentEle = document.querySelector('.items');
 
+
+const ShowItems =  document.getElementById('Item_Per_Page');
+ShowItems.onchange = ShowPerPage;
+var itemPerPage =2;
+const ItemPerPage = localStorage.getItem('ItemPerPage');
+ShowItems.value =ItemPerPage;
+
+function ShowPerPage(){
+  itemPerPage = Number(this.value);
+  localStorage.setItem('ItemPerPage',itemPerPage);
+}
+
     async function onSubmit(e){
         e.preventDefault();
         const amount = document.getElementById('amount').value;
@@ -47,7 +59,7 @@ const parentEle = document.querySelector('.items');
         //console.log(decodeToken);
         try {
             const token= localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:3000/expense/getallexpense?page=${page}`, { headers: {"Authorization" : token}});
+            const response = await axios.get(`http://localhost:3000/expense/getallexpense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: {"Authorization" : token}});
             // console.log(response);
             showPagination(response.data);
             if(response.status===200){
@@ -94,12 +106,14 @@ const parentEle = document.querySelector('.items');
       function getExpenses(page) {
         const token = localStorage.getItem('token');
         axios
-          .get(`http://localhost:3000/expense/getallexpense?page=${page}`, { headers: { "Authorization": token } })
+          .get(`http://localhost:3000/expense/getallexpense?page=${page}&itemPerPage=${ItemPerPage}`, { headers: { "Authorization": token } })
           .then((response) => {
-            console.log(response.data);
+            //console.log(response.data);
             pagination.innerHTML = '';
             showPagination(response.data);
             parentEle.innerHTML = '';
+
+            
               if (response.status === 200) {
                 for (var i = 0; i < response.data.allExpense.length; i++) {
                   showUserDetails(response.data.allExpense[i]);
@@ -230,7 +244,10 @@ async function showPremiumFeatures(){
   
 function showLeaderBoard(username,totalExpense){
     const parentNode=document.getElementById('leaderboard');
-    const children=`<li id="${username}"> Name : ${username} , Totoalexpense : ${totalExpense} </li>`;
+    const children = `<li id="${username}" style="list-style-type: none; margin-bottom: 10px; padding: 5px; border: 1px solid #ccc; border-radius: 5px; background-color: #f2f2f2;width: 30%;"> 
+                    Name: ${username}, Total Expense: ${totalExpense}
+                 </li>`;
+
     parentNode.innerHTML=parentNode.innerHTML+children;
 }
 
@@ -244,7 +261,8 @@ async function download(){
             a.download="myexpense.csv";
             a.click();
             const downloadmessage = document.getElementById('downloadmessage');
-            downloadmessage.innerHTML += '<h2>File downloaded Successfuly</h2>'
+            downloadmessage.innerHTML += '<h2 style="color: violet; text-align: center;">File downloaded successfully</h2>';
+
         }
     }
     catch(err){
@@ -260,7 +278,15 @@ async function downloadhistory(){
      const parentElement = document.getElementById('reportlist');
      parentElement.innerHTML='<h1>Download History</h1>'
      response.data.allFileUrl.forEach((userDownloadReport)=>{
-     parentElement.innerHTML+=`<li>url:<a href =${userDownloadReport.fileUrl}> Report, Click here download again</a> <br> Downloaded at ${userDownloadReport.createdAt}<br></li>`
+        parentElement.innerHTML += `
+        <li style="margin-bottom: 10px; list-style-type: none; border: 1px solid #ddd; padding: 10px;">
+          <span style="font-weight: bold;">url:</span>
+          <a href="${userDownloadReport.fileUrl}" style="text-decoration: none; color: #3498db;">Report, Click here to download again</a>
+          <br>
+          Downloaded at ${userDownloadReport.createdAt}
+        </li>
+      `;
+      
       })
     }
     catch(err){
