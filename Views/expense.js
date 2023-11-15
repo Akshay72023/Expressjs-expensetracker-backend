@@ -77,7 +77,7 @@ myForm.addEventListener('submit', onSubmit);
         function showUserDetails(expense) {
             const parentEle = document.querySelector('.items');
             const childEle = `<li id="${expense.id}">${expense.amount}-${expense.description}-${expense.category}
-                <button onclick="deleteExpense('${expense.id}')">Delete</button>`;
+                <button onclick="deleteExpense('${expense.id}')">Delete</button><br><br>`;
             parentEle.innerHTML += childEle;
         }
 
@@ -150,16 +150,17 @@ async function showNewFeatures(){
     const premium = document.getElementById('premium');
     const inputElement = '<button class="btn btn-primary"  onclick=showPremiumFeatures()>Show Leaderboard</button><br>';
     const downloadElement='<button class="btn btn-primary" onclick=download()>Download File</button>'
+    const newElement='<button class="btn btn-primary" onclick=downloadhistory()>Recent downloads</button>'
     premium.innerHTML+= inputElement;
     premium.innerHTML+=downloadElement;
-      
+    premium.innerHTML+=newElement;
 }
 
 
 async function showPremiumFeatures(){
     const token = localStorage.getItem('token');
     const response = await axios.get(`http://localhost:3000/premium/showleaderboard`, { headers: {"Authorization" : token}});
-    console.log(response);
+    //console.log(response);
     document.getElementById('leaderboard').innerHTML="";
     document.getElementById('leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
   
@@ -176,3 +177,37 @@ function showLeaderBoard(username,totalExpense){
     const children=`<li id="${username}"> Name : ${username} , Totoalexpense : ${totalExpense} </li>`;
     parentNode.innerHTML=parentNode.innerHTML+children;
 }
+
+async function download(){
+    try{
+        const token = localStorage.getItem('token');
+        const response= await axios.get('http://localhost:3000/expense/download',{ headers: {"Authorization" : token} });
+        if(response.status===201){
+            var a = document.createElement("a");
+            a.href=response.data.fileUrl;
+            a.download="myexpense.csv";
+            a.click();
+            const downloadmessage = document.getElementById('downloadmessage');
+            downloadmessage.innerHTML += '<h2>File downloaded Successfuly</h2>'
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
+};
+
+
+async function downloadhistory(){
+    try{
+     const token=localStorage.getItem('token')
+     const response= await axios.get('http://localhost:3000/expense/downloadhistory', {headers: {'Authorization': token}})
+     const parentElement = document.getElementById('reportlist');
+     parentElement.innerHTML='<h1>Download History</h1>'
+     response.data.allFileUrl.forEach((userDownloadReport)=>{
+     parentElement.innerHTML+=`<li>url:<a href =${userDownloadReport.fileUrl}> Report, Click here download again</a> <br> Downloaded at ${userDownloadReport.createdAt}<br></li>`
+      })
+    }
+    catch(err){
+        console.log(err);
+    }
+};

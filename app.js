@@ -18,6 +18,7 @@ const User= require('./models/user');
 const Expense= require('./models/expense');
 const Order= require('./models/order');
 const Forgotpassword=require('./models/forgotpassword');
+const Report= require('./models/reports');
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -32,8 +33,11 @@ User.hasMany(Expense);
 Expense.belongsTo(User);
 User.hasMany(Order);
 Order.belongsTo(User);
-User.hasMany(Forgotpassword)
-Forgotpassword.belongsTo(User)
+User.hasMany(Forgotpassword);
+Forgotpassword.belongsTo(User);
+User.hasMany(Report);
+Report.belongsTo(User);
+
 
 sequelize
     .sync()
