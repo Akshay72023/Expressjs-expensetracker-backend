@@ -1,5 +1,8 @@
 const myForm = document.querySelector('#my-form');
 myForm.addEventListener('submit', onSubmit);
+const token= localStorage.getItem('token');
+const pagination= document.getElementById('pagination-container');
+const parentEle = document.querySelector('.items');
 
     async function onSubmit(e){
         e.preventDefault();
@@ -31,28 +34,82 @@ myForm.addEventListener('submit', onSubmit);
     
         return JSON.parse(jsonPayload);
     }
-        
-    window.addEventListener('DOMContentLoaded' ,async ()=>{  
+      
+      window.addEventListener('DOMContentLoaded' ,async ()=>{  
         const token= localStorage.getItem('token');
         const decodeToken= parseJwt(token);
-        //console.log(decodeToken);
-        try {
-            const response= await axios.get('http://localhost:3000/expense/getallexpense', {headers:{'Authorization':token}});
-            // console.log(response);
-            for (var i = 0; i < response.data.allExpense.length; i++) {
-                showUserDetails(response.data.allExpense[i]);
-            }
-            const ispremiumuser=decodeToken.isPremiumUser
+        const ispremiumuser=decodeToken.isPremiumUser;
             if(ispremiumuser){
                 showPremiumUser();
                 showNewFeatures();
             }
+        const page=1;
+        //console.log(decodeToken);
+        try {
+            const token= localStorage.getItem('token');
+            const response = await axios.get(`http://localhost:3000/expense/getallexpense?page=${page}`, { headers: {"Authorization" : token}});
+            // console.log(response);
+            showPagination(response.data);
+            if(response.status===200){
+            for (var i = 0; i < response.data.allExpense.length; i++) {
+                showUserDetails(response.data.allExpense[i]);
+            }
+        }
+            
             } 
             catch (err) {
                 console.log(err);
             }
         });
 
+        function showPagination({
+            currentPage,
+            hasNextPage,
+            nextPage,
+            hasPreviousPage,
+            previousPage,
+            lastPage,
+          }) {
+            if(hasPreviousPage){
+              const btn2 = document.createElement('button')
+              btn2.innerHTML = previousPage
+              btn2.addEventListener('click', () => getExpenses(previousPage))
+              pagination.appendChild(btn2)
+            }
+          
+            const btn1 = document.createElement('button')
+            btn1.innerHTML = `<h3>${currentPage}</h3>`
+            btn1.addEventListener('click', () => getExpenses(currentPage))
+            pagination.appendChild(btn1)
+          
+           if(hasNextPage) { 
+              const btn3 = document.createElement('button')
+              btn3.innerHTML = nextPage
+              btn3.addEventListener('click', () => getExpenses(nextPage))
+              pagination.appendChild(btn3)
+           }
+          }
+
+
+      function getExpenses(page) {
+        const token = localStorage.getItem('token');
+        axios
+          .get(`http://localhost:3000/expense/getallexpense?page=${page}`, { headers: { "Authorization": token } })
+          .then((response) => {
+            console.log(response.data);
+            pagination.innerHTML = '';
+            showPagination(response.data);
+            parentEle.innerHTML = '';
+              if (response.status === 200) {
+                for (var i = 0; i < response.data.allExpense.length; i++) {
+                  showUserDetails(response.data.allExpense[i]);
+                } 
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+      
+        
         function showPremiumUser() {
                 const rzpButton = document.getElementById('rzp-button1');
                 const premiumMessageWrapper = document.getElementById('Premium user message');
@@ -75,7 +132,6 @@ myForm.addEventListener('submit', onSubmit);
         
         
         function showUserDetails(expense) {
-            const parentEle = document.querySelector('.items');
             const childEle = `<li id="${expense.id}">${expense.amount}-${expense.description}-${expense.category}
                 <button onclick="deleteExpense('${expense.id}')">Delete</button><br><br>`;
             parentEle.innerHTML += childEle;
@@ -104,7 +160,7 @@ myForm.addEventListener('submit', onSubmit);
 
 
         document.getElementById('rzp-button1').onclick = async function (e) {
-            
+            const token= localStorage.getItem('token');
             console.log(token);
             const response = await axios.post('http://localhost:3000/purchase/premiummembership', {}, { headers: { 'Authorization': token } });
             console.log(response);

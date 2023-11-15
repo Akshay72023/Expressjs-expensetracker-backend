@@ -32,15 +32,42 @@ exports.postExpense= async(req,res,next)=>{
  };
 
  exports.getExpense= async(req,res,next)=>{
+  const ITEMS_PER_PAGE = 3;
     try{
-        const expenses= await  req.user.getExpenses();           //Expense.findAll({where :{userId: req.user.id}});
-        res.status(200).json({allExpense: expenses});
+        const page = req.query.page || 1;
+        let totalItems ;
+        Expense.count({ where: {userId: req.user.id}})
+        .then((total) => {
+            totalItems = total;
+           // console.log('totalItems is :',totalItems);
+            return Expense.findAll({ where: {userId: req.user.id},
+                offset: (page-1) * ITEMS_PER_PAGE,
+                limit: ITEMS_PER_PAGE            
+            })
+        })
+        .then((expenseDetails) => {
+           // console.log('ITEMS_PER_PAGE * page is:',ITEMS_PER_PAGE * page);
+            return res.status(200).json({
+                allExpense : expenseDetails ,
+                isPremiumUser : req.user.isPremiumUser,
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+                nextPage: +page+1,
+                hasPreviousPage:page>1,
+                previousPage:+page-1,
+                lastPage:Math.ceil(totalItems / ITEMS_PER_PAGE)
+            });
+        })
+        .catch((err) => console.log(err));
+        // const expenses= await  req.user.getExpenses();           //Expense.findAll({where :{userId: req.user.id}});
+        // res.status(200).json({allExpense: expenses});
       }
       catch(err){
         console.log('Get expenses is failing',JSON.stringify(err));
         res.status(500).json({error:err});
       }
-};
+}
+ 
 
 exports.deleteExpense= async(req,res,next)=>{
   const t=await sequelize.transaction()
