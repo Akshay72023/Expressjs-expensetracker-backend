@@ -50,21 +50,20 @@ exports.forgotpassword = async (req, res, next) => {
             forgotpasswordrequest.update({ active: false});
             res.status(200).send(`<html>
                         <body>
+                            <script>
+                                document.getElementById("form").addEventListener('submit',
+                                async function (e) {
+                                    e.preventDefault();
+                                    console.log('called')
+                              });
+                            </script>
                             <form action="http://localhost:3000/password/updatepassword/${id}" id="form" method="get">
                             <label for="password">Enter New Password</label><br>
                             <input type="password" name="password" id="password" required/><br><br>
                             <button type="submit" >Reset password</button><br><br>
                             </form>
-                            <script>
-                            document.getElementById("form").addEventListener('submit', formSubmit);
-                            async function formSubmit(e) {
-                                e.preventDefault();
-                                console.log('called');
-                            }
-                            </script>
- 
-                            </body>
-                            </html>`)
+                        </body>
+                      </html>`)
             res.end()
 
         }
@@ -73,30 +72,42 @@ exports.forgotpassword = async (req, res, next) => {
   
 
 
-exports.updatepassword = async (req, res) => {
-    try {
-        console.log(req.params);
-        const { password } = req.query;
-        const id = req.params.id;
-        const resetpasswordrequest = await Forgotpassword.findOne({ where: { id } });
-        if (resetpasswordrequest) {
-            const user = await User.findOne({ where: { id: resetpasswordrequest.userId } });
-            console.log('userDetails', user);
-            if (user) {
-                const saltRounds = 10;
-                const salt = await bcrypt.genSalt(saltRounds);
-                const hash = await bcrypt.hash(password, salt);
-                await user.update({ password: hash });
-                res.status(201).json('Successfully update the new password');
-            } else {
-                return res.status(404).json({ error: 'No user exists', success: false });
-            }
-        } 
-        else {
-            return res.status(404).json({ error: 'Reset password request not found', success: false });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: error.message, success: false });
-    }
-};
+exports.updatepassword = (req, res) => {
+  try {
+      const { password } = req.query;
+      console.log(password);
+      const { id } = req.params;
+      Forgotpassword.findOne({ where : { id: id }}).then(resetpasswordrequest => {
+          User.findOne({where: { id : resetpasswordrequest.userId}}).then(user => {
+              console.log('userDetails', user)
+              if(user) {
+                  //encrypt the password
+
+                  const saltRounds = 10;
+                  bcrypt.genSalt(saltRounds, function(err, salt) {
+                      if(err){
+                          console.log(err);
+                          throw new Error(err);
+                      }
+                      bcrypt.hash(password, salt, function(err, hash) {
+                          // Store hash in your password DB.
+                          if(err){
+                              console.log(err);
+                              throw new Error(err);
+                          }
+                          user.update({ password: hash }).then(() => {
+                              res.status(201).json( 'Successfuly update the new password' );
+                            
+                          })
+                      });
+                  });
+          } else{
+              return res.status(404).json({ error: 'No user Exists', success: false})
+          }
+          })
+      })
+  } catch(error){
+      return res.status(403).json({ error, success: false } )
+  }
+
+}

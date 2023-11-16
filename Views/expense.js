@@ -175,9 +175,9 @@ function ShowPerPage(){
 
         document.getElementById('rzp-button1').onclick = async function (e) {
             const token= localStorage.getItem('token');
-            console.log(token);
+            //console.log(token);
             const response = await axios.post('http://localhost:3000/purchase/premiummembership', {}, { headers: { 'Authorization': token } });
-            console.log(response);
+            //console.log(response);
         
             var options = {
                 "key": response.data.key_id,
@@ -187,7 +187,7 @@ function ShowPerPage(){
                             order_id: options.order_id,
                             payment_id: response.razorpay_payment_id,
                         }, { headers: { "Authorization": token } });
-                         console.log(result.data.token)   
+                         //console.log(result.data.token)   
                         alert('You are a Premium User Now');
                         const rzpButton = document.getElementById('rzp-button1');
                         const premiumMessageWrapper = document.getElementById('Premium user message');
@@ -208,7 +208,7 @@ function ShowPerPage(){
             rzp1.open();
             e.preventDefault();
             rzp1.on('payment.failed', async function (response) {
-              console.log(response);
+              //console.log(response);
               await axios.post('http://localhost:3000/purchase/updatetransactionstatusFail', {
                         order_id: options.order_id,
                     }, { headers: {"Authorization" : token} })
@@ -235,7 +235,7 @@ async function showPremiumFeatures(){
     document.getElementById('leaderboard').innerHTML+=`<h1> Leaderboard <h1>`;
   
     for(var i=0;i<response.data.length;i++){
-        console.log(response.data[i].username,response.data[i].totalExpense);
+        //console.log(response.data[i].username,response.data[i].totalExpense);
         showLeaderBoard(response.data[i].username,response.data[i].totalExpense);
     }
   }

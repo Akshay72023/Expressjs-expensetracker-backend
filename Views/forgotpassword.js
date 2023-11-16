@@ -8,7 +8,7 @@ forgotBtn.addEventListener('click',async function(e){
     console.log(obj);
     //console.log(email);
     const respone= await axios.post('http://localhost:3000/password/forgotpassword',obj);
-    console.log(respone);
+    //console.log(respone);
     try{
         if(respone.status === 200){
            document.getElementById('message').textContent= 'Mail sent successfully';

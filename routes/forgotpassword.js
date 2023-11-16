@@ -7,7 +7,7 @@ router.post('/forgotpassword',passwordController.forgotpassword);
 
 router.get('/resetpassword/:id',passwordController.resetpassword);
 
-router.use('/updatepassword/:id',passwordController.updatepassword);
+router.get('/updatepassword/:id',passwordController.updatepassword);
 
 
 module.exports= router;

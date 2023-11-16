@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt=require('jsonwebtoken');
+require("dotenv").config();
 
 exports.postSignup = async (req, res, next) => {
     try {
@@ -25,7 +26,7 @@ exports.postSignup = async (req, res, next) => {
 };
 
 function generateAccessToken(id,username,isPremiumUser){
-    return jwt.sign({userId :id , username:username,isPremiumUser},'secretekey');
+    return jwt.sign({userId :id , username:username,isPremiumUser}, process.env.TOKEN_SECRET);
 }
 
 exports.postLogin = async (req, res, next) => {
